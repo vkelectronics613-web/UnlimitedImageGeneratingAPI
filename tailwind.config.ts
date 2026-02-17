@@ -88,4 +88,8 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate")],
+  fontFamily: {
+    sans: ['Inter', 'sans-serif'],
+    mono: ['JetBrains Mono', 'monospace'],
+  },
 } satisfies Config;
