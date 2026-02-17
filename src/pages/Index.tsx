@@ -7,6 +7,7 @@ import ImageHistory from "@/components/ImageHistory";
 import LoadingAnimation from "@/components/LoadingAnimation";
 import type { HistoryItem } from "@/components/ImageHistory";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const SAMPLE_IMAGES: HistoryItem[] = [];
 
@@ -21,31 +22,41 @@ const Index = () => {
     setCurrentImage(null);
 
     try {
-      // TODO: Replace with actual Lovable Cloud edge function call
-      // For now, simulate with a placeholder
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      const { data, error } = await supabase.functions.invoke("generate-image", {
+        body: { prompt },
+      });
 
-      // Placeholder - will be replaced with real AI generation
-      const placeholderUrl = `https://picsum.photos/seed/${encodeURIComponent(prompt)}/1024/1024`;
+      if (error) {
+        throw new Error(error.message || "Generation failed");
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      const imageUrl = data.imageUrl;
+      if (!imageUrl) {
+        throw new Error("No image returned");
+      }
 
       const newItem: HistoryItem = {
         id: crypto.randomUUID(),
         prompt,
-        imageUrl: placeholderUrl,
+        imageUrl,
         createdAt: new Date(),
       };
 
-      setCurrentImage({ url: placeholderUrl, prompt });
+      setCurrentImage({ url: imageUrl, prompt });
       setHistory((prev) => [newItem, ...prev].slice(0, 12));
 
       toast({
         title: "Image generated!",
         description: "Your image is ready to view and download.",
       });
-    } catch {
+    } catch (err: any) {
       toast({
         title: "Generation failed",
-        description: "Something went wrong. Please try again.",
+        description: err?.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
