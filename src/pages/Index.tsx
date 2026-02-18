@@ -1,6 +1,8 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Key } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import PromptInput from "@/components/PromptInput";
 import ImagePreview from "@/components/ImagePreview";
 import ImageHistory from "@/components/ImageHistory";
@@ -12,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 const SAMPLE_IMAGES: HistoryItem[] = [];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState<{ url: string; prompt: string } | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>(SAMPLE_IMAGES);
@@ -89,6 +92,15 @@ const Index = () => {
             <p className="text-muted-foreground text-lg max-w-md mx-auto">
               Transform your words into stunning visuals with AI
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/auth")}
+              className="mt-2"
+            >
+              <Key className="h-4 w-4 mr-2" />
+              Get API Access
+            </Button>
           </motion.div>
         </header>
 
