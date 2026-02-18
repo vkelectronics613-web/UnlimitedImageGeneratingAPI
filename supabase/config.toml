@@ -1,1 +1,7 @@
 project_id = "tonuctamrfsvulxgfjrs"
+
+[functions.generate-image]
+verify_jwt = false
+
+[functions.api-generate-image]
+verify_jwt = false
