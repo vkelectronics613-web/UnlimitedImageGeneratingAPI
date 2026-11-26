@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Key, WifiOff } from "lucide-react";
+import { Sparkles, Key, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PromptInput from "@/components/PromptInput";
 import ImagePreview from "@/components/ImagePreview";
@@ -10,7 +10,6 @@ import LoadingAnimation from "@/components/LoadingAnimation";
 import type { HistoryItem } from "@/components/ImageHistory";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { generateOfflineImage } from "@/lib/offlineGenerator";
 
 const STORAGE_KEY = "imageforge_history";
 
@@ -41,26 +40,45 @@ const Index = () => {
     setCurrentImage(null);
 
     let imageUrl: string | null = null;
-    let isOffline = !navigator.onLine;
+    let engine = "Direct AI";
 
-    // If online, attempt cloud backend first; fallback to local generative engine automatically
-    if (!isOffline) {
+    // 1. Try Pollinations / Flux free unlimited AI generation first (Real photorealistic images, zero API key)
+    try {
+      const encodedPrompt = encodeURIComponent(prompt.trim());
+      const seed = Math.floor(Math.random() * 1000000);
+      const testUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
+      
+      // Verify image responds
+      const probe = await fetch(testUrl, { method: "HEAD", signal: AbortSignal.timeout(12000) });
+      if (probe.ok) {
+        imageUrl = testUrl;
+        engine = "Pollinations / Flux Engine";
+      }
+    } catch {
+      // Cloud probe failed, fallback to Supabase
+    }
+
+    // 2. If Pollinations probe timed out or failed, try your Supabase Edge Function
+    if (!imageUrl) {
       try {
         const { data, error } = await supabase.functions.invoke("generate-image", {
           body: { prompt },
         });
         if (!error && data?.imageUrl) {
           imageUrl = data.imageUrl;
+          engine = "Supabase / Gemini";
         }
       } catch {
-        // Network or API failure -> seamlessly fallback
+        // Fallback
       }
     }
 
-    // Zero-network offline fallback engine
+    // 3. Fallback direct image URL if head probe was blocked by CORS
     if (!imageUrl) {
-      imageUrl = await generateOfflineImage(prompt);
-      isOffline = true;
+      const encodedPrompt = encodeURIComponent(prompt.trim());
+      const seed = Math.floor(Math.random() * 1000000);
+      imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
+      engine = "Direct AI Stream";
     }
 
     const newItem: HistoryItem = {
@@ -74,10 +92,8 @@ const Index = () => {
     setHistory((prev) => [newItem, ...prev].slice(0, 16));
 
     toast({
-      title: isOffline ? "Image Generated (Offline Engine)" : "Image Generated!",
-      description: isOffline
-        ? "Rendered 100% locally on your device without internet."
-        : "Your image is ready to view and download.",
+      title: "Real AI Image Generated!",
+      description: `Rendered with ${engine}. High-resolution visual output ready.`,
     });
 
     setIsLoading(false);
@@ -106,7 +122,7 @@ const Index = () => {
               </h1>
             </div>
             <p className="text-muted-foreground text-lg max-w-md mx-auto">
-              Transform your words into visual art • Works 100% Offline
+              Transform your words into real photorealistic AI visuals • 100% Free &amp; Unlimited
             </p>
             <div className="flex items-center justify-center gap-2 pt-2">
               <Button
@@ -118,8 +134,8 @@ const Index = () => {
                 API Dashboard
               </Button>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-                <WifiOff className="h-3 w-3" />
-                Offline Ready
+                <Zap className="h-3 w-3 text-amber-500" />
+                Real AI Photorealism Active
               </div>
             </div>
           </motion.div>
@@ -159,7 +175,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-8 text-center border-t border-border">
           <p className="text-sm text-muted-foreground font-mono">
-            ImageForge • Open Source &amp; Offline Autonomous Synthesis
+            ImageForge • Open Source Real AI Image Generation
           </p>
         </footer>
       </div>
