@@ -1,73 +1,121 @@
-# Welcome to your Lovable project
+# 🎨 ImageForge — Unlimited AI Image Generation Platform & API
 
-## Project info
+> A high-performance, full-stack AI image generation web application and developer REST API engine.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+[![Live Demo](https://img.shields.io/badge/Live_App-promptpainter.lovable.app-blue?style=flat&logo=safari)](https://promptpainter.lovable.app)
+[![React](https://img.shields.io/badge/React-18-blue.svg)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3-38B2AC.svg)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## How can I edit this code?
+Live Application: **[promptpainter.lovable.app](https://promptpainter.lovable.app)**
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## ✨ Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Prompt to Image Engine:** High-fidelity AI image generation from natural language prompts.
+- **Developer API Key Management:** Built-in dashboard to generate, inspect, and manage API keys with quota and rate tracking.
+- **REST API Endpoint:** Programmatic image generation endpoint for developers and external integrations.
+- **Image History & Storage:** Persisted gallery with instant view, prompt inspection, and full-resolution download.
+- **Modern Responsive UI:** Glassmorphism interface styled with Tailwind CSS, Radix UI primitives, and Framer Motion animations.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 🚀 Public API Usage
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Developers can integrate ImageForge into their own scripts, applications, and bots.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Endpoint
+```http
+POST https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image
+Content-Type: application/json
+```
 
-Follow these steps:
+### Request Example (`curl`)
+```bash
+curl -X POST https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image \
+  -H "Content-Type: application/json" \
+  -d '{
+    "api_key": "YOUR_API_KEY",
+    "prompt": "a cybernetic fox running through a neon Tokyo street, 8k resolution cinematic"
+  }'
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Request Example (JavaScript / TypeScript)
+```javascript
+const response = await fetch("https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    api_key: "YOUR_API_KEY",
+    prompt: "a cybernetic fox in a neon city, 8k cinematic lighting"
+  })
+});
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+const data = await response.json();
+console.log("Image URL:", data.imageUrl);
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Request Example (Python)
+```python
+import requests
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+url = "https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image"
+payload = {
+    "api_key": "YOUR_API_KEY",
+    "prompt": "hyper-realistic mechanical falcon perched on a glass skyscraper, octane render"
+}
+
+res = requests.post(url, json=payload)
+data = res.json()
+print("Generated Image:", data.get("imageUrl"))
+```
+
+---
+
+## 💻 Local Development Setup
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/vkelectronics613-web/UnlimitedImageGeneratingAPI.git
+cd UnlimitedImageGeneratingAPI
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Start local development server
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be running at `http://localhost:5173`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📂 Architecture
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```text
+UnlimitedImageGeneratingAPI/
+├── src/
+│   ├── components/       # Prompt input, history gallery, loading states, UI
+│   ├── pages/
+│   │   ├── Index.tsx     # Main generation studio
+│   │   ├── Dashboard.tsx # API key manager and usage analytics
+│   │   └── Auth.tsx      # User authentication flow
+│   └── integrations/     # Supabase backend client
+├── supabase/
+│   └── functions/
+│       ├── generate-image/      # In-app image generation edge function
+│       └── api-generate-image/  # Developer REST API edge function
+└── .env                  # Environment configuration
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 📄 License
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+This project is licensed under the [MIT License](LICENSE).
