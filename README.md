@@ -1,28 +1,48 @@
-# 🎨 ImageForge — Unlimited AI Image Generation Platform & API
+# 🎨 ImageForge — Unlimited AI Image Generation Platform, REST API & Public MCP Server
 
-> A high-performance, full-stack AI image generation web application and developer REST API engine.
+> A high-performance, full-stack AI image generation web application, developer REST API, and public **Model Context Protocol (MCP)** server for AI agents.
 
 [![Live Demo](https://img.shields.io/badge/Live_App-promptpainter.lovable.app-blue?style=flat&logo=safari)](https://promptpainter.lovable.app)
+[![MCP Server](https://img.shields.io/badge/MCP_Server-Public_Endpoint-success?style=flat&logo=anthropic)](https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image)
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3-38B2AC.svg)](https://tailwindcss.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Live Application: **[promptpainter.lovable.app](https://promptpainter.lovable.app)**
 
 ---
 
-## ✨ Features
+## ⚡ Public Model Context Protocol (MCP) Server
 
-- **Prompt to Image Engine:** High-fidelity AI image generation from natural language prompts.
-- **Developer API Key Management:** Built-in dashboard to generate, inspect, and manage API keys with quota and rate tracking.
-- **REST API Endpoint:** Programmatic image generation endpoint for developers and external integrations.
-- **Image History & Storage:** Persisted gallery with instant view, prompt inspection, and full-resolution download.
-- **Modern Responsive UI:** Glassmorphism interface styled with Tailwind CSS, Radix UI primitives, and Framer Motion animations.
+ImageForge natively exposes a **public, remote Model Context Protocol (MCP)** server endpoint compliant with the official 2024-11-05 JSON-RPC 2.0 specification. 
+
+Any AI agent, Claude desktop client, Cursor, or Antigravity workspace can connect directly to this public server without installing local packages.
+
+### Public MCP Server Configuration
+
+Add this to your `claude_desktop_config.json`, `mcp.json`, or Agent settings:
+
+```json
+{
+  "mcpServers": {
+    "unlimited-image-forge": {
+      "url": "https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image",
+      "transport": "http"
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool Name | Description | Arguments |
+| :--- | :--- | :--- |
+| `generate_image` | Generates photorealistic AI images with zero censorship & unlimited quota. | `prompt` *(string, required)*, `width` *(int)*, `height` *(int)*, `seed` *(int)* |
+| `get_service_status` | Checks health and operational state of the generation engine. | *None* |
 
 ---
 
-## 🚀 Public API Usage
+## 🚀 Public REST API Usage
 
 Developers can integrate ImageForge into their own scripts, applications, and bots.
 
@@ -37,7 +57,6 @@ Content-Type: application/json
 curl -X POST https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image \
   -H "Content-Type: application/json" \
   -d '{
-    "api_key": "YOUR_API_KEY",
     "prompt": "a cybernetic fox running through a neon Tokyo street, 8k resolution cinematic"
   }'
 ```
@@ -48,7 +67,6 @@ const response = await fetch("https://tonuctamrfsvulxgfjrs.supabase.co/functions
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    api_key: "YOUR_API_KEY",
     prompt: "a cybernetic fox in a neon city, 8k cinematic lighting"
   })
 });
@@ -63,7 +81,6 @@ import requests
 
 url = "https://tonuctamrfsvulxgfjrs.supabase.co/functions/v1/api-generate-image"
 payload = {
-    "api_key": "YOUR_API_KEY",
     "prompt": "hyper-realistic mechanical falcon perched on a glass skyscraper, octane render"
 }
 
@@ -92,8 +109,6 @@ npm install
 npm run dev
 ```
 
-The app will be running at `http://localhost:5173`.
-
 ---
 
 ## 📂 Architecture
@@ -109,9 +124,8 @@ UnlimitedImageGeneratingAPI/
 │   └── integrations/     # Supabase backend client
 ├── supabase/
 │   └── functions/
-│       ├── generate-image/      # In-app image generation edge function
-│       └── api-generate-image/  # Developer REST API edge function
-└── .env                  # Environment configuration
+│       └── api-generate-image/  # Dual REST API & Public MCP JSON-RPC 2.0 Server
+└── server.js             # Local offline fallback server
 ```
 
 ---
